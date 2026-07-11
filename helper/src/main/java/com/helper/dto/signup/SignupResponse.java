@@ -1,4 +1,4 @@
-package com.helper.dto;
+package com.helper.dto.signup;
 
 public class SignupResponse {
 

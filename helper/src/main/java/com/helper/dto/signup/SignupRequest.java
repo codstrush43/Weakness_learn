@@ -1,4 +1,4 @@
-package com.helper.dto;
+package com.helper.dto.signup;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
