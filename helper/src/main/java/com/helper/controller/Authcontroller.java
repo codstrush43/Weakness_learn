@@ -4,9 +4,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
-
 import com.helper.dto.signup.SignupRequest;
 import com.helper.servirce.UserDtoService;
+import com.helper.util.JWTUtil;
 import org.springframework.http.ResponseEntity;
 import com.helper.dto.login.LoginRequest;
 import com.helper.entity.Users;
@@ -17,8 +17,11 @@ import com.helper.Exception.GeneratingException.InvalidPasswordException;
 public class Authcontroller {
     
     private final UserDtoService userDtoService;
-    Authcontroller(UserDtoService userDtoService) {
+    private final JWTUtil jwtUtil;
+
+    Authcontroller(UserDtoService userDtoService,JWTUtil jwtUtil) {
         this.userDtoService = userDtoService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/signup")
@@ -41,7 +44,7 @@ public class Authcontroller {
         {
             throw new InvalidPasswordException("Invalid password for email : " + loginRequest.getEmail());
         }
-        return ResponseEntity.ok().body("login successful");
+        return ResponseEntity.ok().body(jwtUtil.getJwtToken(user.getEmail()));
     }
 
 }
