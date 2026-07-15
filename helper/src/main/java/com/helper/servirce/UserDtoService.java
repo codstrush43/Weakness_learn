@@ -9,7 +9,7 @@ import org.modelmapper.ModelMapper;
 import com.helper.dto.signup.SignupRequest;
 import com.helper.entity.Users;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserDtoService {
@@ -21,7 +21,7 @@ public class UserDtoService {
     private ModelMapper modelMapper;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     public void registerUser(SignupRequest signupRequest){
           

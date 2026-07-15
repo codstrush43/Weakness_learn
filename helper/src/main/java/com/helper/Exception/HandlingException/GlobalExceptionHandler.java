@@ -12,6 +12,7 @@ import java.util.HashMap;
 import org.springframework.dao.DataIntegrityViolationException;
 import com.helper.Exception.GeneratingException.UserNotFoundException;
 import com.helper.Exception.GeneratingException.InvalidPasswordException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.http.HttpStatus;
 
 
@@ -37,7 +38,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorMessage);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Map<String,String>> handleUserNotFoundException(UserNotFoundException ex){
         Map<String,String> errorMessage = new HashMap<>();
         errorMessage.put("error",ex.getMessage());
@@ -48,6 +49,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String,String>> handleInvalidPasswordException(InvalidPasswordException ex){
         Map<String,String> errorMessage = new HashMap<>();
         errorMessage.put("error",ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String,String>> handleBadCredentialException(BadCredentialsException ex)
+    {
+        Map<String,String> errorMessage = new HashMap<>();
+        errorMessage.put("error","Your Password Was Incorrect, Please Enter Valid Password");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
     }
 
