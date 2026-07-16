@@ -2,6 +2,7 @@ package com.helper.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import com.helper.dto.signup.SignupRequest;
@@ -47,9 +48,16 @@ public class Authcontroller {
                     loginRequest.getEmail(),
                     loginRequest.getPassword()
                 )
-        );
+        );  
 
         return ResponseEntity.ok().body(jwtUtil.getJwtToken(loginRequest.getEmail()));
+    }
+
+    @GetMapping("/student")
+    public ResponseEntity<String> hii()
+    {
+
+        return ResponseEntity.ok().body("helo this is student!!");
     }
 
 }
