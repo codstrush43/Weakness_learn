@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.helper.repository.UserRepository;
 import com.helper.entity.Users;
-import com.helper.Exception.GeneratingException.UserNotFoundException;
+import com.helper.Exception.GeneratingException.EmailNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         Users user =(Users)userRepository.findByEmail(username).orElse(null);
         if(user==null)
         {
-            throw new UserNotFoundException("User not found with email: " + username);
+            throw new EmailNotFoundException("User not found with email: " + username);
         }
         return new CustomUserDetails(user);
     }

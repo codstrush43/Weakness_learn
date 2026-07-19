@@ -3,13 +3,16 @@ package com.helper.servirce;
 import org.springframework.beans.factory.annotation.Autowired;
 
 // import com.helper.dto.SignupResponse;
-import com.helper.repository.UserRepository;
-import org.modelmapper.ModelMapper;
 
-import com.helper.dto.signup.SignupRequest;
+import com.helper.repository.UserRepository;
+
+import org.modelmapper.ModelMapper;
 import com.helper.entity.Users;
+
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.helper.dto.signup.SignupRequest;
 
 @Service
 public class UserDtoService {
