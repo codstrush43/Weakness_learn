@@ -30,7 +30,7 @@ import com.helper.dto.codeforcesDto.CodeforcesResponse;
 import com.helper.dto.codeforcesDto.CodeforcesResponse;
 import com.helper.dto.codeforcesDto.CodeforcesUserInfo;
 import com.helper.servirce.CodeforcesService;
-
+ 
 
 
 @RestController
@@ -52,7 +52,7 @@ public class Authcontroller {
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@Valid @RequestBody SignupRequest signupRequest)
     {
-        CodeforcesResponse codeforcesResponse=codeforcesService.getCodeforcesResponse(signupRequest.getCf_id()); 
+        CodeforcesResponse codeforcesResponse=codeforcesService.getCodeforcesUserInfo(signupRequest.getCf_id()); 
         List<CodeforcesUserInfo> codeforcesUserInfo=codeforcesResponse.getResult();
 
         if(codeforcesUserInfo.get(0).getEmail()==null)
@@ -63,7 +63,7 @@ public class Authcontroller {
         {
             throw new CodeforcesEmailNotMatchException("Enter Email Which Is Registerede With Codeforces.");
         }
-        userDtoService.registerUser(signupRequest);
+        userDtoService.registerUser(signupRequest,codeforcesUserInfo.get(0));
         return ResponseEntity.ok().body("User registered successfully");
     }
 

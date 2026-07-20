@@ -8,11 +8,13 @@ import com.helper.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
 import com.helper.entity.Users;
+import com.helper.dto.codeforcesDto.CodeforcesUserInfo;
+import com.helper.dto.signup.SignupRequest;
+import com.helper.entity.Codeforces;
 
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.helper.dto.signup.SignupRequest;
 
 @Service
 public class UserDtoService {
@@ -26,12 +28,15 @@ public class UserDtoService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public void registerUser(SignupRequest signupRequest){
+
+    public void registerUser(SignupRequest signupRequest,CodeforcesUserInfo codeforcesUserInfo){
           
         Users user = modelMapper.map(signupRequest, Users.class);
+        Codeforces codeforces=modelMapper.map(codeforcesUserInfo,Codeforces.class);
         
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-
+        codeforces.setUser(user);
+        user.setCodeforces(codeforces);
         userRepository.save(user);
         // return new SignupResponse();
     }
