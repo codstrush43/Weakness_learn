@@ -13,24 +13,29 @@ import jakarta.persistence.Table;
 
 @Entity
 @Data
-@Table(name = "problem")
-public class Problem {
+@Table(name = "tag_statistic")
+public class TagStatistic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
-    private String tag;
-    private Integer solved_problem_count;
-    private Integer wrong_answer_count;
+
+    private Integer solvedProblemCount;
+    private Integer wrongAnswerCount;
 
     @ManyToOne
     @JoinColumn(name = "codeforces_id")
     private Codeforces codeforces;
 
-    public Problem(Integer solved_problem_count, String tag, Integer wrong_answer_count) {
-        this.solved_problem_count = solved_problem_count;
+    @ManyToOne
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
+
+    public TagStatistic(Integer solvedProblemCount, Tag tag,Codeforces codeforces, Integer wrongAnswerCount) {
+        this.solvedProblemCount = solvedProblemCount;
         this.tag = tag;
-        this.wrong_answer_count = wrong_answer_count;
+        this.wrongAnswerCount = wrongAnswerCount;
+        this.codeforces=codeforces;
     }
-    public Problem(){}
+    public TagStatistic(){}
 
 }

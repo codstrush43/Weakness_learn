@@ -23,6 +23,7 @@ import com.helper.Exception.GeneratingException.InvalidPasswordException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.helper.Exception.GeneratingException.CodeforcesEmailNotFoundException;
 import com.helper.Exception.GeneratingException.CodeforcesHandlerNotExist;
@@ -76,7 +77,7 @@ public class Authcontroller {
                     loginRequest.getPassword()
                 )
         );  
-
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         return ResponseEntity.ok().body(jwtUtil.getJwtToken(loginRequest.getEmail()));
     }
 
