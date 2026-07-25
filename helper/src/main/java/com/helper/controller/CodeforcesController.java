@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.helper.entity.Codeforces;
 import com.helper.entity.Tag;
 import com.helper.servirce.CodeforcesService;
 
@@ -17,10 +18,16 @@ public class CodeforcesController {
     private CodeforcesService codeforcesService;
 
 
-    @GetMapping("/user")
+    @GetMapping("/reload")
     public ResponseEntity<String> userDetails()
     {
-        return ResponseEntity.ok().body(codeforcesService.reloadUser());
+        return ResponseEntity.ok().body(codeforcesService.reload());
+    }
+
+    @GetMapping("/codeforces")
+    public ResponseEntity<Codeforces> getCodeforces()
+    {
+        return ResponseEntity.ok().body(codeforcesService.getCodeforcesHandler());
     }
 
     @GetMapping("/weekness")

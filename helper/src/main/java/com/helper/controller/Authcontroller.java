@@ -38,7 +38,6 @@ public class Authcontroller {
     private final AuthenticationManager authenticationManager;
     private final CodeforcesService codeforcesService;
 
-
     public Authcontroller(UserDtoService userDtoService,JWTUtil jwtUtil,AuthenticationManager authenticationManager,CodeforcesService codeforcesService, CodeforcesController codeforcesController) {
         this.userDtoService = userDtoService;
         this.jwtUtil = jwtUtil;
@@ -61,6 +60,7 @@ public class Authcontroller {
             throw new CodeforcesEmailNotMatchException("Enter Email Which Is Registerede With Codeforces.");
         }
         userDtoService.registerUser(signupRequest,codeforcesUserInfo.get(0));
+        codeforcesService.reloadUserAtSignup(signupRequest.getEmail());
         return ResponseEntity.ok().body("User registered successfully");
     }
 
@@ -76,12 +76,4 @@ public class Authcontroller {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return ResponseEntity.ok().body(jwtUtil.getJwtToken(loginRequest.getEmail()));
     }
-
-    @GetMapping("/student")
-    public ResponseEntity<String> hii()
-    {
-        
-        return ResponseEntity.ok().body("helo this is student!!");
-    }
-
 }

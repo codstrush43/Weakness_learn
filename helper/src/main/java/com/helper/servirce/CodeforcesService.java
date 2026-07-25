@@ -19,8 +19,6 @@ import java.util.HashMap;
 
 import org.modelmapper.ModelMapper;
 
-import com.helper.entity.Users;
-
 import com.helper.entity.Codeforces;
 
 import java.util.List;
@@ -86,22 +84,28 @@ public class CodeforcesService {
                                         handle
         );
     }
-
-    public String reloadUser()
+    public Codeforces getCodeforcesHandler()
     {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetail=(UserDetails)authentication.getPrincipal();
-        String username=userDetail.getUsername();
-        
-        Users user=(Users)userRepository.findByEmail(username)
-                                            .orElse(null);
-        Codeforces codeforces=(Codeforces)codeforcesRepository.findByEmail(username).orElse(null);
-        
-        
-        if(user == null)
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        if(authentication==null)
+        {
+            throw new CodeforcesHandlerNotExist("Pease Login, user not found!");
+        }
+        UserDetails userDetails=(UserDetails)authentication.getPrincipal();
+        if(userDetails == null)
             {
                 throw new EmailNotFoundException("User not found inside the codeforces service");
-        }
+            }
+        String username=userDetails.getUsername();
+
+        Codeforces codeforces=(Codeforces)codeforcesRepository.findByEmail(username).orElse(null);
+        return codeforces;
+    }
+
+    public void reloadUserAtSignup(String username)
+    {
+        Codeforces codeforces=(Codeforces)codeforcesRepository.findByEmail(username).orElse(null);
+
         if(codeforces==null)
             {
                 throw new CodeforcesHandlerNotExist("codeforces handler not found inside the codeforces service.");
@@ -109,8 +113,6 @@ public class CodeforcesService {
         CodeforcesUserStatusInfo codeforcesUserStatusInfo=getCodeforcesUserStatusInfo(codeforces.getHandle());
 
         List<CodeforcesSubmissionInfo> codeforcesSubmissionInfos=codeforcesUserStatusInfo.getResult();
-
-        Integer n=codeforcesSubmissionInfos.size();
 
         List<Tag> tags=tagRepository.findAll();
 
@@ -141,7 +143,8 @@ public class CodeforcesService {
                 }
             }
         }
-
+        codeforces.setPrevSubmission(codeforcesSubmissionInfos.get(0).getSubmission_id());
+        codeforcesRepository.save(codeforces);
         for(Map.Entry<String,Tag> it : preBuildTags.entrySet())
         {
             String submission_tag=it.getKey();
@@ -150,22 +153,92 @@ public class CodeforcesService {
             Integer cnt_solved=solved_submission.get(submission_tag);
             Integer cnt_wrong=wrong_submission.get(submission_tag);
 
+            if(cnt_solved==null)
+                cnt_solved=0;
+            if(cnt_wrong==null)
+                cnt_wrong=0;
+
             TagStatistic stats=new TagStatistic(cnt_solved,tag,codeforces,cnt_wrong);
 
             tagStatisticRepository.save(stats);
 
         }
-        
-        return "user reloaded";
+    }
+
+    public String reload()
+    {
+        Codeforces codeforces=getCodeforcesHandler();
+
+        if(codeforces==null)
+            {
+                throw new CodeforcesHandlerNotExist("codeforces handler not found inside the codeforces service.");
+            }
+        CodeforcesUserStatusInfo codeforcesUserStatusInfo=getCodeforcesUserStatusInfo(codeforces.getHandle());
+
+        List<CodeforcesSubmissionInfo> codeforcesSubmissionInfos=codeforcesUserStatusInfo.getResult();
+
+        List<Tag> tags=tagRepository.findAll();
+
+        Map<String,Tag> preBuildTags=tags.stream()
+                                        .collect(Collectors.toMap(Tag::getName,Function.identity()));
+
+        Map<String,Integer> solved_submission=new HashMap<>();
+        Map<String,Integer> wrong_submission=new HashMap<>();
+
+        Integer prevSubmission=codeforces.getPrevSubmission();
+
+        for(CodeforcesSubmissionInfo cf_info : codeforcesSubmissionInfos)
+        {
+            if(prevSubmission>=(cf_info.getSubmission_id()))
+                break;
+            boolean isSolved=cf_info.getStatus().equals("OK")?true:false;
+            CodeforcesProblemInfo codeforcesProblemInfo=cf_info.getProblem();
+            List<String> submission_tag=codeforcesProblemInfo.getTags();
+            for(String t:submission_tag)
+            {
+                if(preBuildTags.get(t)==null)
+                    continue;
+                if(isSolved)
+                {
+                    Integer cnt=solved_submission.getOrDefault(preBuildTags.get(t).getName(),0);
+                    solved_submission.put(preBuildTags.get(t).getName(),cnt+1);
+                }
+                else
+                {
+                    Integer cnt=wrong_submission.getOrDefault(preBuildTags.get(t).getName(),0);
+                    wrong_submission.put(preBuildTags.get(t).getName(),cnt+1);
+                }
+            }
+        }
+        codeforces.setPrevSubmission(codeforcesSubmissionInfos.get(0).getSubmission_id());
+        for(Map.Entry<String,Tag> it : preBuildTags.entrySet())
+            {
+                String submission_tag=it.getKey();
+                Tag tag=it.getValue();
+                
+                Integer cnt_solved=solved_submission.get(submission_tag);
+                Integer cnt_wrong=wrong_submission.get(submission_tag);
+
+                if(cnt_solved==null)
+                    cnt_solved=0;
+                if(cnt_wrong==null)
+                    cnt_wrong=0;
+                
+                TagStatistic stats=(TagStatistic)tagStatisticRepository.findByCodeforcesAndTag(codeforces,tag).orElse(null);
+
+                stats.setSolvedProblemCount(stats.getSolvedProblemCount()+cnt_solved);
+                stats.setWrongAnswerCount(stats.getWrongAnswerCount()+cnt_wrong);
+                tagStatisticRepository.save(stats);
+                
+            }
+        codeforcesRepository.save(codeforces);
+
+        return "reloaded!";
     }
 
     public List<List<Tag>> getWeekness()
     {
-        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetail=(UserDetails)authentication.getPrincipal();
-        String username=userDetail.getUsername();
-
-        Codeforces codeforces=(Codeforces)codeforcesRepository.findByEmail(username).orElse(null);
+        Codeforces codeforces=getCodeforcesHandler();
 
         if(codeforces==null)
             throw new CodeforcesHandlerNotExist("codeforces handler not found inside the codeforces service.");

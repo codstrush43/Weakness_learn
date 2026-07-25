@@ -3,6 +3,7 @@ package com.helper.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,13 +39,16 @@ public class Codeforces {
     @Column(unique = true)
     private String email;
 
+    @JsonIgnore
     private Integer prevSubmission;
 
     @OneToOne
     @JoinColumn(name = "user_id",nullable = false, unique = true)
+    @JsonIgnore
     private Users user;
 
     @OneToMany(mappedBy = "codeforces", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<TagStatistic> tagStatistics=new ArrayList<>();
 
     public Codeforces(String email, String handle, String maxRank, Integer maxRating, String rank, Integer rating,Users user) {
