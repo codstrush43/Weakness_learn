@@ -13,12 +13,10 @@ import com.helper.util.JWTUtil;
 
 import org.springframework.http.ResponseEntity;
 
-import com.helper.entity.Users;
 import com.helper.servirce.UserDtoService;
 import com.helper.Exception.GeneratingException.CodeforcesEmailNotMatchException;
 import com.helper.dto.login.LoginRequest;
 import com.helper.dto.signup.SignupRequest;
-import com.helper.Exception.GeneratingException.InvalidPasswordException;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -26,8 +24,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.helper.Exception.GeneratingException.CodeforcesEmailNotFoundException;
-import com.helper.Exception.GeneratingException.CodeforcesHandlerNotExist;
-import com.helper.dto.codeforcesDto.CodeforcesResponse;
 import com.helper.dto.codeforcesDto.CodeforcesResponse;
 import com.helper.dto.codeforcesDto.CodeforcesUserInfo;
 import com.helper.servirce.CodeforcesService;
